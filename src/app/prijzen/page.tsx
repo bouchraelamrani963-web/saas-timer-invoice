@@ -52,7 +52,7 @@ const faq = [
   { v: "Is mijn salaris echt anoniem?", a: "Ja, 100%. We slaan geen persoonlijke informatie op bij salarisopgaven. Er is geen koppeling tussen jouw account en de salarisinformatie die je deelt." },
   { v: "Hoe actueel zijn de gegevens?", a: "Onze database wordt continu bijgewerkt. Salarisgegevens ouder dan 2 jaar worden automatisch gewogen om actuele marktdata te waarborgen." },
   { v: "Kan ik mijn abonnement opzeggen?", a: "Ja, je kunt op elk moment opzeggen via je accountinstellingen. Je behoudt toegang tot het einde van de betaalde periode." },
-  { v: "Ik ben recruiter. Waarom SalarisCheck boven alternatieven?", a: "SalarisCheck focust specifiek op de Nederlandse markt met actuele, geverifieerde data. Geen Amerikaanse benchmarks die niet kloppen voor NL." },
+  { v: "Ik ben recruiter. Waarom CheckMijnLoon boven alternatieven?", a: "CheckMijnLoon focust specifiek op de Nederlandse markt met actuele, geverifieerde data. Geen Amerikaanse benchmarks die niet kloppen voor NL." },
 ];
 
 function Check({ ok }: { ok: boolean | string }) {
@@ -68,8 +68,8 @@ export default function PrijzenPage() {
       <header className="border-b border-gray-100 bg-white/95 backdrop-blur sticky top-0 z-50">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <Link href="/" className="flex items-center gap-2">
-            <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">SC</span>
-            <span className="text-lg font-bold text-gray-900">SalarisCheck<span className="text-indigo-600">.nl</span></span>
+            <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">CM</span>
+            <span className="text-lg font-bold text-gray-900">CheckMijnLoon<span className="text-indigo-600">.nl</span></span>
           </Link>
           <Link href="/registreer" className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Gratis starten</Link>
         </div>

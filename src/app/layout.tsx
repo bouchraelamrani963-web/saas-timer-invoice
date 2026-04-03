@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SalarisCheck.nl — Weet wat je waard bent",
+  title: "CheckMijnLoon.nl — Weet wat je waard bent",
   description:
-    "Vergelijk jouw salaris anoniem met duizenden Nederlandse professionals. Gratis salarischeck, onderhandelcoach en transparantie voor iedereen.",
-  keywords: "salaris, salarischeck, salaris vergelijken, Nederland, loon, brutosalaris",
+    "Vergelijk jouw salaris anoniem met duizenden Nederlandse professionals. Gratis checkmijnloon, onderhandelcoach en transparantie voor iedereen.",
+  keywords: "salaris, checkmijnloon, salaris vergelijken, Nederland, loon, brutosalaris",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -57,7 +57,7 @@ Deze resultaten laten zien dat ik meer waarde lever dan gemiddeld voor iemand in
 
   const marktPositie = `Marktwaarde:
 
-Op basis van recente salarisdata voor ${data.functie || "mijn functie"} in de ${data.sector || "sector"} — mede via bronnen als SalarisCheck.nl — ligt het marktgemiddelde voor iemand met ${ervaringLabel} ervaring tussen de ${formattedHuidig} en ${formattedGevraagd} bruto per jaar.
+Op basis van recente salarisdata voor ${data.functie || "mijn functie"} in de ${data.sector || "sector"} — mede via bronnen als CheckMijnLoon.nl — ligt het marktgemiddelde voor iemand met ${ervaringLabel} ervaring tussen de ${formattedHuidig} en ${formattedGevraagd} bruto per jaar.
 
 Mijn huidige salaris van ${formattedHuidig} ligt daarmee${stijging > 0 ? ` ${stijging}% onder` : " aan de onderkant van"} het marktgemiddelde. Een aanpassing naar ${formattedGevraagd} — een verhoging van ${formattedVerschil} — brengt mij op het marktgemiddelde voor mijn functie en ervaring.`;
 
@@ -101,8 +101,8 @@ function NavBar() {
     <header className="border-b border-gray-100 bg-white">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
         <Link href="/" className="flex items-center gap-2">
-          <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">SC</span>
-          <span className="text-lg font-bold text-gray-900">SalarisCheck<span className="text-indigo-600">.nl</span></span>
+          <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">CM</span>
+          <span className="text-lg font-bold text-gray-900">CheckMijnLoon<span className="text-indigo-600">.nl</span></span>
         </Link>
         <nav className="flex items-center gap-4">
           <Link href="/checken" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">Salaris checken</Link>
@@ -311,7 +311,7 @@ export default function OnderhandelenPage() {
             <div className="rounded-2xl bg-orange-50 p-5 ring-1 ring-orange-100 text-sm text-orange-900">
               <p className="font-semibold mb-1">Pro tip</p>
               <p>Controleer eerst je marktwaarde via onze{" "}
-                <Link href="/checken" className="underline font-semibold">salarischeck</Link>.
+                <Link href="/checken" className="underline font-semibold">checkmijnloon</Link>.
                 Daarmee heb je concrete data om mee te onderhandelen.
               </p>
             </div>
@@ -373,7 +373,7 @@ export default function OnderhandelenPage() {
             <div className="mt-8 rounded-2xl bg-indigo-900 p-6 text-white">
               <h3 className="mb-2 text-lg font-bold">Wil je dit script opslaan?</h3>
               <p className="mb-4 text-sm text-indigo-300">
-                Met Pro kun je scripts opslaan, aanpassen en delen. Plus: onbeperkte salarischeck en salarisalerts.
+                Met Pro kun je scripts opslaan, aanpassen en delen. Plus: onbeperkte checkmijnloon en salarisalerts.
               </p>
               <Link
                 href="/prijzen"

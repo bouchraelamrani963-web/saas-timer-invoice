@@ -52,8 +52,8 @@ function NavBar() {
     <header className="border-b border-gray-100 bg-white">
       <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
         <Link href="/" className="flex items-center gap-2">
-          <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">SC</span>
-          <span className="text-lg font-bold text-gray-900">SalarisCheck<span className="text-indigo-600">.nl</span></span>
+          <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">CM</span>
+          <span className="text-lg font-bold text-gray-900">CheckMijnLoon<span className="text-indigo-600">.nl</span></span>
         </Link>
         <Link href="/checken" className="text-sm text-indigo-600 hover:underline">← Terug naar checken</Link>
       </div>

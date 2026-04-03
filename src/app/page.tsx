@@ -10,7 +10,7 @@ const demoData = [
 
 const testimonials = [
   {
-    quote: "Dankzij SalarisCheck wist ik dat ik €15.000 onder marktwaarde verdiende. Na het gesprek met mijn werkgever zit ik nu op het marktgemiddelde.",
+    quote: "Dankzij CheckMijnLoon wist ik dat ik €15.000 onder marktwaarde verdiende. Na het gesprek met mijn werkgever zit ik nu op het marktgemiddelde.",
     naam: "Sanne V., UX Designer",
     sector: "IT",
   },
@@ -20,7 +20,7 @@ const testimonials = [
     sector: "Finance",
   },
   {
-    quote: "Als recruiter gebruik ik SalarisCheck om realistische verwachtingen te scheppen bij kandidaten. Onmisbaar tool geworden.",
+    quote: "Als recruiter gebruik ik CheckMijnLoon om realistische verwachtingen te scheppen bij kandidaten. Onmisbaar tool geworden.",
     naam: "Lisa K., Senior Recruiter",
     sector: "HR",
   },
@@ -39,8 +39,8 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <Link href="/" className="flex items-center gap-2">
-            <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">SC</span>
-            <span className="text-lg font-bold text-gray-900">SalarisCheck<span className="text-indigo-600">.nl</span></span>
+            <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">CM</span>
+            <span className="text-lg font-bold text-gray-900">CheckMijnLoon<span className="text-indigo-600">.nl</span></span>
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
             <Link href="/checken" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">Salaris checken</Link>
@@ -221,7 +221,7 @@ export default function HomePage() {
                   naam: "Gratis",
                   prijs: "€0",
                   periode: "voor altijd",
-                  features: ["Salaris toevoegen", "3 zoekopdrachten/maand", "Basis salarischeck"],
+                  features: ["Salaris toevoegen", "3 zoekopdrachten/maand", "Basis checkmijnloon"],
                   cta: "Gratis starten",
                   href: "/invullen",
                   highlight: false,
@@ -285,7 +285,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-5xl px-4">
           <div className="mb-8 grid grid-cols-2 gap-8 md:grid-cols-4">
             <div>
-              <p className="mb-3 font-bold text-gray-900">SalarisCheck.nl</p>
+              <p className="mb-3 font-bold text-gray-900">CheckMijnLoon.nl</p>
               <p className="text-sm text-gray-500">Salaristransparantie voor iedereen in Nederland.</p>
             </div>
             <div>
@@ -313,7 +313,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="border-t border-gray-100 pt-6 text-center text-sm text-gray-400">
-            © {new Date().getFullYear()} SalarisCheck.nl — Gebouwd voor Nederland
+            © {new Date().getFullYear()} CheckMijnLoon.nl — Gebouwd voor Nederland
           </div>
         </div>
       </footer>

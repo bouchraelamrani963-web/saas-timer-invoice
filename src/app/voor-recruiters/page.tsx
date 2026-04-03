@@ -54,7 +54,7 @@ const useCases = [
 
 const testimonials = [
   {
-    quote: "SalarisCheck.nl heeft ons gesprek met klanten getransformeerd. We komen nu met data, niet met giswerk.",
+    quote: "CheckMijnLoon.nl heeft ons gesprek met klanten getransformeerd. We komen nu met data, niet met giswerk.",
     naam: "Joris M.",
     titel: "Senior Recruiter, Amsterdam",
   },
@@ -77,8 +77,8 @@ export default function VoorRecruitersPage() {
       <header className="border-b border-gray-100 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <Link href="/" className="flex items-center gap-2">
-            <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">SC</span>
-            <span className="text-lg font-bold text-gray-900">SalarisCheck<span className="text-indigo-600">.nl</span></span>
+            <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">CM</span>
+            <span className="text-lg font-bold text-gray-900">CheckMijnLoon<span className="text-indigo-600">.nl</span></span>
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
             <Link href="/checken" className="text-sm text-gray-600 hover:text-indigo-600">Salarischeck</Link>
@@ -300,7 +300,7 @@ export default function VoorRecruitersPage() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-gray-700">Hoe wil je SalarisCheck gebruiken?</label>
+                  <label className="mb-1 block text-sm font-semibold text-gray-700">Hoe wil je CheckMijnLoon gebruiken?</label>
                   <textarea
                     rows={3}
                     placeholder="Bijv. salarisadvies geven aan kandidaten, benchmarken van vacatures..."
@@ -321,7 +321,7 @@ export default function VoorRecruitersPage() {
 
       {/* Footer */}
       <footer className="border-t border-gray-100 bg-white py-8 text-center text-sm text-gray-400">
-        © {new Date().getFullYear()} SalarisCheck.nl —{" "}
+        © {new Date().getFullYear()} CheckMijnLoon.nl —{" "}
         <Link href="/" className="hover:text-indigo-600">Home</Link>
         {" · "}
         <Link href="/prijzen" className="hover:text-indigo-600">Prijzen</Link>

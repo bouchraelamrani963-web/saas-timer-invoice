@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET ?? "salarischeck-dev-secret-change-in-production";
+const JWT_SECRET = process.env.JWT_SECRET ?? "checkmijnloon-dev-secret-change-in-production";
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);
