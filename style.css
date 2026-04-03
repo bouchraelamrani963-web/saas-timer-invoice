@@ -218,8 +218,41 @@ a:hover { text-decoration: underline; }
   border: 1px solid var(--border);
 }
 .logo-saas { background: linear-gradient(135deg, #0a66c2, #004182); }
-.logo-freelance { background: linear-gradient(135deg, #7c3aed, #4c1d95); }
+.logo-freelance { background: linear-gradient(135deg, #0891b2, #0e7490); }
 .logo-edu { background: linear-gradient(135deg, #059669, #065f46); font-size: 1.25rem; }
+.logo-div { background: linear-gradient(135deg, #d97706, #92400e); }
+.logo-tech { background: linear-gradient(135deg, #dc2626, #7f1d1d); }
+
+/* IT Development */
+.dev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 520px) { .dev-grid { grid-template-columns: 1fr; } }
+.dev-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fafafa;
+}
+.dev-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: .8rem;
+  color: #fff;
+}
+.dev-icon.cert  { background: linear-gradient(135deg, #0078d4, #003f8a); }
+.dev-icon.itil  { background: linear-gradient(135deg, #7c3aed, #4c1d95); }
+.dev-icon.m365  { background: linear-gradient(135deg, #d83b01, #881f00); }
+.dev-icon.net   { background: linear-gradient(135deg, #059669, #065f46); }
+.dev-item strong { font-size: .9rem; display: block; margin-bottom: 2px; }
+.dev-item p { font-size: .8125rem; color: var(--text-secondary); }
 .timeline-content { flex: 1; }
 .timeline-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 2px; }
 .timeline-company { font-size: .875rem; color: var(--text-primary); }
