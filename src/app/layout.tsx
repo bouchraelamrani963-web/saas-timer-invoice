@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AutoOffer — Professionele offertes in 10 seconden",
+  title: "SalarisCheck.nl — Weet wat je waard bent",
   description:
-    "AI-gestuurde offerte generator voor aannemers, schilders, loodgieters en andere vakmensen. Maak in 10 seconden een professionele offerte.",
+    "Vergelijk jouw salaris anoniem met duizenden Nederlandse professionals. Gratis salarischeck, onderhandelcoach en transparantie voor iedereen.",
+  keywords: "salaris, salarischeck, salaris vergelijken, Nederland, loon, brutosalaris",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
