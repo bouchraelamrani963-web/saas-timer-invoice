@@ -321,6 +321,27 @@ export default function OnderhandelenPage() {
         {/* Script output */}
         {script && (
           <div id="script-output" className="mt-10">
+            {/* Pro upsell — BOVEN het script, direct zichtbaar */}
+            <div className="mb-6 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-white">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-orange-200 mb-1">Pro feature</p>
+                  <h3 className="text-lg font-black">Dit script is gegenereerd. Wil je het opslaan?</h3>
+                  <p className="mt-1 text-sm text-orange-100">
+                    Upgrade naar Pro: script opslaan · salarisalert · onbeperkt vergelijken · marktdata voor jouw sector.
+                  </p>
+                </div>
+                <div className="flex-shrink-0">
+                  <Link
+                    href="/prijzen"
+                    className="block rounded-xl bg-white px-6 py-3 text-center text-sm font-black text-orange-600 hover:bg-orange-50 transition-colors whitespace-nowrap"
+                  >
+                    Pro → €9/mnd
+                  </Link>
+                </div>
+              </div>
+            </div>
+
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-2xl font-black text-gray-900">Jouw onderhandelscript</h2>
               <div className="flex gap-3">
@@ -369,18 +390,28 @@ export default function OnderhandelenPage() {
               ))}
             </div>
 
-            {/* Pro CTA */}
-            <div className="mt-8 rounded-2xl bg-indigo-900 p-6 text-white">
-              <h3 className="mb-2 text-lg font-bold">Wil je dit script opslaan?</h3>
-              <p className="mb-4 text-sm text-indigo-300">
-                Met Pro kun je scripts opslaan, aanpassen en delen. Plus: onbeperkt vergelijken en salarisalerts.
+            {/* Bottom CTA — na het script */}
+            <div className="mt-8 rounded-2xl bg-indigo-950 p-8 text-white text-center">
+              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-indigo-400">Haal meer uit SalarisRadar</p>
+              <h3 className="mb-3 text-2xl font-black">Weet je zeker dat je marktconform verdient?</h3>
+              <p className="mb-6 text-indigo-300 max-w-lg mx-auto">
+                Combineer je script met harde marktdata. Met Pro zie je exact hoe jouw salaris scoort
+                én ontvang je een alert zodra de markt verandert.
               </p>
-              <Link
-                href="/prijzen"
-                className="inline-block rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors"
-              >
-                Upgrade naar Pro — €9/mnd
-              </Link>
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <Link
+                  href="/checken"
+                  className="rounded-xl bg-indigo-600 px-6 py-3 text-center font-bold text-white hover:bg-indigo-700 transition-colors"
+                >
+                  Salaris gratis checken →
+                </Link>
+                <Link
+                  href="/prijzen"
+                  className="rounded-xl bg-white/10 px-6 py-3 text-center font-semibold text-white hover:bg-white/20 transition-colors"
+                >
+                  Bekijk Pro (€9/mnd)
+                </Link>
+              </div>
             </div>
           </div>
         )}

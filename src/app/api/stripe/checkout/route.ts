@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 const PRICES = {
+  starter: process.env.STRIPE_STARTER_PRICE_ID ?? "",
   pro: process.env.STRIPE_PRO_PRICE_ID ?? "",
   recruiter: process.env.STRIPE_RECRUITER_PRICE_ID ?? "",
 };
