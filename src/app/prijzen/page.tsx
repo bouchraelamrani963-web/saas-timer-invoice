@@ -2,14 +2,15 @@
 import Link from "next/link";
 import { useState } from "react";
 
-async function startCheckout(plan: "pro" | "recruiter") {
+async function startCheckout(plan: "pro" | "recruiter"): Promise<string | null> {
   const res = await fetch("/api/stripe/checkout", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ plan }),
   });
   const data = await res.json();
-  if (data.url) window.location.href = data.url;
+  if (data.url) { window.location.href = data.url; return null; }
+  return data.error ?? "Er ging iets mis. Probeer het opnieuw.";
 }
 
 const plannen = [
@@ -72,19 +73,29 @@ const faq = [
 
 function CheckoutButton({ plan, cta, highlight }: { plan: null | "pro" | "recruiter"; cta: string; href: string | null; highlight: boolean }) {
   const [loading, setLoading] = useState(false);
+  const [fout, setFout] = useState<string | null>(null);
   const cls = `block w-full rounded-xl py-3 text-center text-sm font-bold transition ${highlight ? "bg-white text-indigo-600 hover:bg-indigo-50" : "bg-indigo-600 text-white hover:bg-indigo-700"} disabled:opacity-60`;
 
   if (!plan) {
     return <Link href="/registreer" className={cls}>{cta}</Link>;
   }
   return (
-    <button
-      className={cls}
-      disabled={loading}
-      onClick={async () => { setLoading(true); await startCheckout(plan); setLoading(false); }}
-    >
-      {loading ? "Laden..." : cta}
-    </button>
+    <div>
+      <button
+        className={cls}
+        disabled={loading}
+        onClick={async () => {
+          setLoading(true);
+          setFout(null);
+          const err = await startCheckout(plan);
+          if (err) setFout(err);
+          setLoading(false);
+        }}
+      >
+        {loading ? "Laden..." : cta}
+      </button>
+      {fout && <p className="mt-2 text-xs text-red-500 text-center">{fout}</p>}
+    </div>
   );
 }
 
