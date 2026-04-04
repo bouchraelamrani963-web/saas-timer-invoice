@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 const PRICES = {
-  pro: "price_1TIZteFYqQfpXhHgNrUBq2PX",
-  recruiter: "price_1TIZYkFYqQfpXhHgMnuZzpU4",
+  pro: process.env.STRIPE_PRO_PRICE_ID ?? "",
+  recruiter: process.env.STRIPE_RECRUITER_PRICE_ID ?? "",
 };
 
 export async function POST(req: NextRequest) {
