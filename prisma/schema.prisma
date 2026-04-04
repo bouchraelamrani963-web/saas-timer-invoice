@@ -7,14 +7,16 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  naam         String
-  passwordHash String
-  plan         Plan     @default(GRATIS)
-  stripeSubId  String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(cuid())
+  email         String   @unique
+  naam          String
+  passwordHash  String
+  plan          Plan     @default(GRATIS)
+  stripeSubId   String?
+  referralCode  String?  @unique
+  referredBy    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 enum Plan {
@@ -35,4 +37,17 @@ model SalarisBijdrage {
   extraVoordelen   String
   verified         Boolean  @default(false)
   createdAt        DateTime @default(now())
+}
+
+model Waitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Referral {
+  id           String   @id @default(cuid())
+  referrerCode String
+  usedByEmail  String
+  createdAt    DateTime @default(now())
 }

@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { artikelen } from "@/lib/blog-data";
 
 const demoData = [
   { functie: "Software Engineer", sector: "IT", regio: "Noord-Holland", gemiddeld: "€82.500", range: "€65k – €105k" },
@@ -13,16 +17,19 @@ const testimonials = [
     quote: "Dankzij SalarisRadar wist ik dat ik €15.000 onder marktwaarde verdiende. Na het gesprek met mijn werkgever zit ik nu op het marktgemiddelde.",
     naam: "Sanne V., UX Designer",
     sector: "IT",
+    loonsverhoging: "+€15.000",
   },
   {
     quote: "Eindelijk inzicht in wat collega's verdienen zonder ongemakkelijke gesprekken. De onderhandelcoach was super handig voor mijn jaargesprek.",
     naam: "Mark de B., Financieel Analist",
     sector: "Finance",
+    loonsverhoging: "+€8.500",
   },
   {
     quote: "Als recruiter gebruik ik SalarisRadar om realistische verwachtingen te scheppen bij kandidaten. Onmisbaar tool geworden.",
     naam: "Lisa K., Senior Recruiter",
     sector: "HR",
+    loonsverhoging: "Tijdbesparing: 3u/week",
   },
 ];
 
@@ -31,6 +38,56 @@ const steps = [
   { n: "2", title: "Vergelijk met de markt", desc: "Zie direct hoe jouw salaris zich verhoudt tot vergelijkbare functies." },
   { n: "3", title: "Onderhandel met vertrouwen", desc: "Gebruik onze coach om je argument voor te bereiden." },
 ];
+
+const recenteArtikelen = artikelen.slice(0, 3);
+
+function NewsletterSignup() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        setStatus("success");
+        setEmail("");
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row sm:max-w-md mx-auto">
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="jouw@email.nl"
+        required
+        className="flex-1 rounded-xl border border-indigo-300 bg-white/10 px-4 py-3 text-white placeholder-indigo-300 outline-none focus:border-white focus:ring-2 focus:ring-white/20"
+      />
+      <button
+        type="submit"
+        disabled={status === "loading" || status === "success"}
+        className="rounded-xl bg-orange-500 px-6 py-3 font-bold text-white hover:bg-orange-400 transition-colors disabled:opacity-60"
+      >
+        {status === "loading" ? "..." : status === "success" ? "Ingeschreven ✓" : "Inschrijven"}
+      </button>
+      {status === "error" && (
+        <p className="text-sm text-orange-300 sm:col-span-2">Er ging iets mis, probeer opnieuw.</p>
+      )}
+    </form>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -46,6 +103,7 @@ export default function HomePage() {
             <Link href="/checken" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">Salaris checken</Link>
             <Link href="/invullen" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">Bijdragen</Link>
             <Link href="/onderhandelen" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">Onderhandelen</Link>
+            <Link href="/blog" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">Blog</Link>
             <Link href="/voor-recruiters" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">Voor recruiters</Link>
             <Link href="/prijzen" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">Prijzen</Link>
           </nav>
@@ -92,13 +150,14 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Stats bar */}
+        {/* Social proof bar */}
         <section className="border-b border-gray-100 bg-indigo-50 py-8">
-          <div className="mx-auto max-w-4xl px-4">
-            <div className="grid grid-cols-3 gap-6 text-center">
+          <div className="mx-auto max-w-5xl px-4">
+            <div className="grid grid-cols-2 gap-6 text-center md:grid-cols-4">
               {[
                 { getal: "12.847", label: "Salarissen in database" },
                 { getal: "47", label: "Sectoren gedekt" },
+                { getal: "€12.400", label: "Gem. loonsverhoging na gebruik" },
                 { getal: "100%", label: "Anoniem & veilig" },
               ].map((s) => (
                 <div key={s.label}>
@@ -168,6 +227,69 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Testimonials met loonsverhoging badges */}
+        <section className="py-20">
+          <div className="mx-auto max-w-5xl px-4">
+            <div className="mb-12 text-center">
+              <h2 className="mb-3 text-4xl font-black text-gray-900">Wat gebruikers zeggen</h2>
+              <p className="text-lg text-gray-500">Meer dan 2.400 professionals gingen je voor</p>
+            </div>
+            <div className="grid gap-6 md:grid-cols-3">
+              {testimonials.map((t) => (
+                <div key={t.naam} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 flex flex-col">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="text-orange-400 text-lg">★★★★★</span>
+                    <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
+                      {t.loonsverhoging}
+                    </span>
+                  </div>
+                  <p className="mb-4 flex-1 text-gray-700 italic">&quot;{t.quote}&quot;</p>
+                  <div>
+                    <p className="font-semibold text-gray-900">{t.naam}</p>
+                    <p className="text-sm text-gray-400">{t.sector}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Blog preview */}
+        <section className="bg-gray-50 py-20">
+          <div className="mx-auto max-w-5xl px-4">
+            <div className="mb-10 flex items-end justify-between">
+              <div>
+                <h2 className="mb-2 text-4xl font-black text-gray-900">Salaris Tips & Inzichten</h2>
+                <p className="text-gray-500">Praktische artikelen voor Nederlandse professionals</p>
+              </div>
+              <Link href="/blog" className="hidden text-sm font-semibold text-indigo-600 hover:text-indigo-800 md:block">
+                Alle artikelen →
+              </Link>
+            </div>
+            <div className="grid gap-6 md:grid-cols-3">
+              {recenteArtikelen.map((artikel) => (
+                <Link
+                  key={artikel.slug}
+                  href={`/blog/${artikel.slug}`}
+                  className="group flex flex-col rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 hover:ring-indigo-200 hover:shadow-md transition-all"
+                >
+                  <span className="mb-2 text-xs font-semibold text-indigo-600">{artikel.categorie} · {artikel.leestijd}</span>
+                  <h3 className="mb-3 font-bold text-gray-900 group-hover:text-indigo-700 transition-colors">
+                    {artikel.titel}
+                  </h3>
+                  <p className="flex-1 text-sm text-gray-500 leading-relaxed">{artikel.beschrijving}</p>
+                  <span className="mt-4 text-sm font-semibold text-indigo-600">Lees meer →</span>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-6 text-center md:hidden">
+              <Link href="/blog" className="text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                Alle artikelen →
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* CTA submit */}
         <section className="bg-gradient-to-r from-orange-500 to-orange-600 py-16 text-white">
           <div className="mx-auto max-w-3xl px-4 text-center">
@@ -185,26 +307,37 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Testimonials */}
+        {/* Referral section */}
         <section className="py-20">
-          <div className="mx-auto max-w-5xl px-4">
-            <div className="mb-12 text-center">
-              <h2 className="mb-3 text-4xl font-black text-gray-900">Wat gebruikers zeggen</h2>
+          <div className="mx-auto max-w-3xl px-4 text-center">
+            <div className="rounded-2xl bg-gradient-to-br from-indigo-50 to-indigo-100 p-10">
+              <div className="mb-4 text-4xl">🎁</div>
+              <h2 className="mb-4 text-3xl font-black text-gray-900">Nodig vrienden uit, win 1 maand Pro gratis</h2>
+              <p className="mb-6 text-gray-600">
+                Deel jouw persoonlijke referral code met collega&apos;s of vrienden.
+                Voor elke persoon die zich aanmeldt via jouw code, ontvangen jullie allebei 1 maand Pro gratis.
+              </p>
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white hover:bg-indigo-700 transition-colors"
+              >
+                Log in om jouw code te zien →
+              </Link>
             </div>
-            <div className="grid gap-6 md:grid-cols-3">
-              {testimonials.map((t) => (
-                <div key={t.naam} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
-                  <div className="mb-4 text-orange-400">
-                    {"★★★★★"}
-                  </div>
-                  <p className="mb-4 text-gray-700 italic">&quot;{t.quote}&quot;</p>
-                  <div>
-                    <p className="font-semibold text-gray-900">{t.naam}</p>
-                    <p className="text-sm text-gray-400">{t.sector}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          </div>
+        </section>
+
+        {/* Newsletter section */}
+        <section className="bg-indigo-900 py-16 text-white">
+          <div className="mx-auto max-w-2xl px-4 text-center">
+            <h2 className="mb-3 text-3xl font-black">Salarisnieuws in jouw inbox</h2>
+            <p className="mb-8 text-indigo-300">
+              Maandelijks de nieuwste salariscijfers per sector, onderhandeltips en marktinzichten. Geen spam, altijd afmeldbaar.
+            </p>
+            <NewsletterSignup />
+            <p className="mt-4 text-xs text-indigo-400">
+              Al 3.200+ professionals ingeschreven · Geen spam · Direct afmeldbaar
+            </p>
           </div>
         </section>
 
@@ -275,6 +408,8 @@ export default function HomePage() {
             </div>
             <p className="mt-8 text-center text-sm text-indigo-400">
               <Link href="/prijzen" className="underline hover:text-white">Bekijk alle features →</Link>
+              {" · "}
+              <Link href="/vergelijking" className="underline hover:text-white">Vergelijk met alternatieven →</Link>
             </p>
           </div>
         </section>
@@ -283,8 +418,8 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-gray-100 bg-white py-10">
         <div className="mx-auto max-w-5xl px-4">
-          <div className="mb-8 grid grid-cols-2 gap-8 md:grid-cols-4">
-            <div>
+          <div className="mb-8 grid grid-cols-2 gap-8 md:grid-cols-5">
+            <div className="col-span-2 md:col-span-1">
               <p className="mb-3 font-bold text-gray-900">SalarisRadar.nl</p>
               <p className="text-sm text-gray-500">Salaristransparantie voor iedereen in Nederland.</p>
             </div>
@@ -294,6 +429,7 @@ export default function HomePage() {
                 <li><Link href="/checken" className="hover:text-indigo-600">Salaris checken</Link></li>
                 <li><Link href="/invullen" className="hover:text-indigo-600">Salaris toevoegen</Link></li>
                 <li><Link href="/onderhandelen" className="hover:text-indigo-600">Onderhandelen</Link></li>
+                <li><Link href="/vergelijking" className="hover:text-indigo-600">Vs. alternatieven</Link></li>
               </ul>
             </div>
             <div>
@@ -301,6 +437,14 @@ export default function HomePage() {
               <ul className="space-y-2 text-sm text-gray-500">
                 <li><Link href="/voor-recruiters" className="hover:text-indigo-600">Voor recruiters</Link></li>
                 <li><Link href="/prijzen" className="hover:text-indigo-600">Prijzen</Link></li>
+              </ul>
+            </div>
+            <div>
+              <p className="mb-3 font-semibold text-gray-700">Kennis</p>
+              <ul className="space-y-2 text-sm text-gray-500">
+                <li><Link href="/blog" className="hover:text-indigo-600">Blog</Link></li>
+                <li><Link href="/blog/salaris-onderhandelen-7-tips" className="hover:text-indigo-600">Onderhandeltips</Link></li>
+                <li><Link href="/blog/gemiddeld-salaris-nederland-2025" className="hover:text-indigo-600">Gem. salaris 2025</Link></li>
               </ul>
             </div>
             <div>
