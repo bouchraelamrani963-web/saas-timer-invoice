@@ -85,7 +85,7 @@ STAP 2: HET HOOFDARGUMENT
 Onderbouw jouw verzoek met feiten. Presenteer dit rustig en zelfverzekerd.
 
 "Ik wil graag mijn salaris bespreken. Op basis van marktonderzoek —
-waaronder data van CheckMijnLoon.nl — zie ik dat ${functie}s in de
+waaronder data van SalarisRadar.nl — zie ik dat ${functie}s in de
 ${sector}-sector momenteel gemiddeld ${gewenstStr} verdienen.
 Mijn huidige salaris van ${huidigStr} ligt ${percentage}% onder dit marktgemiddelde.
 
@@ -116,7 +116,7 @@ Als ze zeggen: "We hebben nu geen budget"
    bevestiging van die afspraak?"
 
 Als ze zeggen: "Je salaris is al marktconform"
-→ "Ik heb ook zelf marktonderzoek gedaan via CheckMijnLoon.nl, en die
+→ "Ik heb ook zelf marktonderzoek gedaan via SalarisRadar.nl, en die
    data laat een ander beeld zien. Mogen we onze bronnen vergelijken?"
 
 Als ze zeggen: "We moeten dit intern bespreken"

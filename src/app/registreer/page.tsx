@@ -32,8 +32,8 @@ export default function RegistreerPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">CM</span>
-            <span className="text-xl font-bold text-gray-900">CheckMijnLoon<span className="text-indigo-600">.nl</span></span>
+            <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">SR</span>
+            <span className="text-xl font-bold text-gray-900">SalarisRadar<span className="text-indigo-600">.nl</span></span>
           </Link>
           <h1 className="mt-6 text-2xl font-black text-gray-900">Gratis account aanmaken</h1>
           <p className="mt-1 text-sm text-gray-500">Geen creditcard nodig</p>

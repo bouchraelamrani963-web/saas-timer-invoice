@@ -38,8 +38,8 @@ function NavBar() {
     <header className="border-b border-gray-100 bg-white">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
         <Link href="/" className="flex items-center gap-2">
-          <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">CM</span>
-          <span className="text-lg font-bold text-gray-900">CheckMijnLoon<span className="text-indigo-600">.nl</span></span>
+          <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">SR</span>
+          <span className="text-lg font-bold text-gray-900">SalarisRadar<span className="text-indigo-600">.nl</span></span>
         </Link>
         <nav className="flex items-center gap-4">
           <Link href="/invullen" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">Bijdragen</Link>
