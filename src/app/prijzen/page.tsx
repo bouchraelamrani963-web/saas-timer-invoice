@@ -1,4 +1,16 @@
+"use client";
 import Link from "next/link";
+import { useState } from "react";
+
+async function startCheckout(plan: "pro" | "recruiter") {
+  const res = await fetch("/api/stripe/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ plan }),
+  });
+  const data = await res.json();
+  if (data.url) window.location.href = data.url;
+}
 
 const plannen = [
   {
@@ -9,6 +21,7 @@ const plannen = [
     features: ["Salaris anoniem opgeven", "3 vergelijkingen per maand", "Basis salarisrange zien", "Geen creditcard nodig"],
     beperkingen: ["AI onderhandelcoach", "Onbeperkt vergelijken", "Salarisalert", "Volledige database"],
     cta: "Gratis starten",
+    plan: null as null | "pro" | "recruiter",
     href: "/registreer",
     highlight: false,
   },
@@ -19,8 +32,9 @@ const plannen = [
     omschrijving: "Voor de serieuze onderhandelaar",
     features: ["Alles van Gratis", "Onbeperkt vergelijken", "AI onderhandelcoach", "Persoonlijk salarisrapport", "Salarisalert bij marktwijzigingen", "Prioriteit support"],
     beperkingen: ["Volledige recruiter database", "CSV export", "API toegang"],
-    cta: "Pro proberen",
-    href: "/registreer?plan=pro",
+    cta: "Pro proberen — €9/maand",
+    plan: "pro" as const,
+    href: null,
     highlight: true,
   },
   {
@@ -30,8 +44,9 @@ const plannen = [
     omschrijving: "Voor HR en recruitment",
     features: ["Alles van Pro", "Volledige ongefilterde database", "Geavanceerde filters", "CSV & Excel export", "API toegang", "Dedicated account manager", "Factuur op bedrijfsnaam"],
     beperkingen: [],
-    cta: "Demo aanvragen",
-    href: "/voor-recruiters",
+    cta: "Recruiter starten — €199/maand",
+    plan: "recruiter" as const,
+    href: null,
     highlight: false,
   },
 ];
@@ -54,6 +69,24 @@ const faq = [
   { v: "Kan ik mijn abonnement opzeggen?", a: "Ja, je kunt op elk moment opzeggen via je accountinstellingen. Je behoudt toegang tot het einde van de betaalde periode." },
   { v: "Ik ben recruiter. Waarom SalarisRadar boven alternatieven?", a: "SalarisRadar focust specifiek op de Nederlandse markt met actuele, geverifieerde data. Geen Amerikaanse benchmarks die niet kloppen voor NL." },
 ];
+
+function CheckoutButton({ plan, cta, highlight }: { plan: null | "pro" | "recruiter"; cta: string; href: string | null; highlight: boolean }) {
+  const [loading, setLoading] = useState(false);
+  const cls = `block w-full rounded-xl py-3 text-center text-sm font-bold transition ${highlight ? "bg-white text-indigo-600 hover:bg-indigo-50" : "bg-indigo-600 text-white hover:bg-indigo-700"} disabled:opacity-60`;
+
+  if (!plan) {
+    return <Link href="/registreer" className={cls}>{cta}</Link>;
+  }
+  return (
+    <button
+      className={cls}
+      disabled={loading}
+      onClick={async () => { setLoading(true); await startCheckout(plan); setLoading(false); }}
+    >
+      {loading ? "Laden..." : cta}
+    </button>
+  );
+}
 
 function Check({ ok }: { ok: boolean | string }) {
   if (typeof ok === "string") return <span className="text-sm text-gray-700">{ok}</span>;
@@ -102,9 +135,7 @@ export default function PrijzenPage() {
                   </li>
                 ))}
               </ul>
-              <Link href={plan.href} className={`block w-full rounded-xl py-3 text-center text-sm font-bold transition ${plan.highlight ? "bg-white text-indigo-600 hover:bg-indigo-50" : "bg-indigo-600 text-white hover:bg-indigo-700"}`}>
-                {plan.cta}
-              </Link>
+              <CheckoutButton plan={plan.plan} cta={plan.cta} href={plan.href} highlight={plan.highlight} />
             </div>
           ))}
         </div>
