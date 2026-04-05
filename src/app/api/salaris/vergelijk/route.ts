@@ -38,12 +38,39 @@ export async function GET(request: NextRequest) {
     if (ervaringMin) seedFiltered = seedFiltered.filter((e) => e.ervaringsjaren >= Number(ervaringMin));
     if (ervaringMax) seedFiltered = seedFiltered.filter((e) => e.ervaringsjaren <= Number(ervaringMax));
 
-    const allEntries = [
+    let allEntries = [
       ...dbEntries.map((e) => ({ ...e, extraVoordelen: e.extraVoordelen })),
       ...seedFiltered,
     ];
 
-    const stats = getSalaryStats(allEntries);
+    let stats = getSalaryStats(allEntries);
+    let relaxed = false;
+
+    // Progressive filter relaxation: drop ervarings filter, then regio, then keep only sector+functie
+    if (!stats) {
+      relaxed = true;
+      // Step 1: drop experience filter, keep sector + regio + functie
+      let fallback = seedData;
+      if (sector) fallback = fallback.filter((e) => e.sector === sector);
+      if (regio) fallback = fallback.filter((e) => e.regio === regio);
+      if (functie) fallback = fallback.filter((e) => e.functie.toLowerCase().includes(functie.toLowerCase()));
+      stats = getSalaryStats([...dbEntries, ...fallback]);
+    }
+
+    if (!stats) {
+      // Step 2: drop regio filter, keep sector + functie
+      let fallback = seedData;
+      if (sector) fallback = fallback.filter((e) => e.sector === sector);
+      if (functie) fallback = fallback.filter((e) => e.functie.toLowerCase().includes(functie.toLowerCase()));
+      stats = getSalaryStats([...dbEntries, ...fallback]);
+    }
+
+    if (!stats) {
+      // Step 3: keep only sector
+      let fallback = seedData;
+      if (sector) fallback = fallback.filter((e) => e.sector === sector);
+      stats = getSalaryStats([...dbEntries, ...fallback]);
+    }
 
     if (!stats) {
       return Response.json({ error: "Geen gegevens gevonden voor deze criteria" }, { status: 404 });
@@ -51,6 +78,7 @@ export async function GET(request: NextRequest) {
 
     return Response.json({
       ...stats,
+      relaxed,
       filters: { sector, regio, functie, ervaringMin, ervaringMax },
     });
   } catch (error) {

@@ -20,6 +20,7 @@ interface SalaryStats {
   p25: number;
   p75: number;
   count: number;
+  relaxed?: boolean;
   filters: {
     sector?: string | null;
     regio?: string | null;
@@ -215,6 +216,11 @@ export default function CheckenPage() {
                 {stats.count} salarissen gevonden
               </span>
             </div>
+            {stats.relaxed && (
+              <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                Niet genoeg exacte data voor jouw filters — we tonen vergelijkbare salarissen met minder strikte criteria.
+              </div>
+            )}
 
             <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <StatCard label="Gemiddeld" value={formatEuro(stats.gemiddeld)} sub="bruto per jaar" accent />

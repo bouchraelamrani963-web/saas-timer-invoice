@@ -47,13 +47,36 @@ export const seedData: SalaryEntry[] = [
   { functie: "Sales Engineer", sector: "Sales", ervaringsjaren: 5, regio: "Zuid-Holland", brutoSalaris: 72000, bedrijfsGrootte: "200+", opleidingsniveau: "hbo", extraVoordelen: "auto,bonus,pensioen" },
 
   // Zorg
+  { functie: "Verpleegkundige", sector: "Zorg", ervaringsjaren: 1, regio: "Noord-Holland", brutoSalaris: 36000, bedrijfsGrootte: "200+", opleidingsniveau: "hbo", extraVoordelen: "pensioen" },
+  { functie: "Verpleegkundige", sector: "Zorg", ervaringsjaren: 3, regio: "Zuid-Holland", brutoSalaris: 40000, bedrijfsGrootte: "200+", opleidingsniveau: "hbo", extraVoordelen: "pensioen" },
   { functie: "Verpleegkundige", sector: "Zorg", ervaringsjaren: 5, regio: "Noord-Holland", brutoSalaris: 44000, bedrijfsGrootte: "200+", opleidingsniveau: "hbo", extraVoordelen: "pensioen" },
+  { functie: "Verpleegkundige", sector: "Zorg", ervaringsjaren: 8, regio: "Utrecht", brutoSalaris: 50000, bedrijfsGrootte: "200+", opleidingsniveau: "hbo", extraVoordelen: "pensioen,bonus" },
+  { functie: "Zorgmanager", sector: "Zorg", ervaringsjaren: 10, regio: "Noord-Holland", brutoSalaris: 78000, bedrijfsGrootte: "200+", opleidingsniveau: "hbo", extraVoordelen: "pensioen,auto" },
+  { functie: "Huisarts", sector: "Zorg", ervaringsjaren: 5, regio: "Noord-Holland", brutoSalaris: 95000, bedrijfsGrootte: "1-10", opleidingsniveau: "wo", extraVoordelen: "pensioen" },
   { functie: "Huisarts", sector: "Zorg", ervaringsjaren: 10, regio: "Zuid-Holland", brutoSalaris: 120000, bedrijfsGrootte: "1-10", opleidingsniveau: "wo", extraVoordelen: "pensioen" },
+  { functie: "Fysiotherapeut", sector: "Zorg", ervaringsjaren: 2, regio: "Noord-Brabant", brutoSalaris: 40000, bedrijfsGrootte: "1-10", opleidingsniveau: "hbo", extraVoordelen: "pensioen" },
   { functie: "Fysiotherapeut", sector: "Zorg", ervaringsjaren: 6, regio: "Utrecht", brutoSalaris: 52000, bedrijfsGrootte: "1-10", opleidingsniveau: "hbo", extraVoordelen: "pensioen" },
+  { functie: "Apotheker", sector: "Zorg", ervaringsjaren: 4, regio: "Zuid-Holland", brutoSalaris: 68000, bedrijfsGrootte: "11-50", opleidingsniveau: "wo", extraVoordelen: "pensioen" },
+  { functie: "Psycholoog", sector: "Zorg", ervaringsjaren: 5, regio: "Noord-Holland", brutoSalaris: 62000, bedrijfsGrootte: "51-200", opleidingsniveau: "wo", extraVoordelen: "pensioen" },
 
   // Onderwijs
+  { functie: "Leraar Basisonderwijs", sector: "Onderwijs", ervaringsjaren: 1, regio: "Zuid-Holland", brutoSalaris: 34000, bedrijfsGrootte: "11-50", opleidingsniveau: "hbo", extraVoordelen: "pensioen" },
+  { functie: "Leraar Basisonderwijs", sector: "Onderwijs", ervaringsjaren: 3, regio: "Noord-Holland", brutoSalaris: 38000, bedrijfsGrootte: "11-50", opleidingsniveau: "hbo", extraVoordelen: "pensioen" },
+  { functie: "Leraar Basisonderwijs", sector: "Onderwijs", ervaringsjaren: 5, regio: "Utrecht", brutoSalaris: 41000, bedrijfsGrootte: "51-200", opleidingsniveau: "hbo", extraVoordelen: "pensioen" },
+  { functie: "Leraar Voortgezet Onderwijs", sector: "Onderwijs", ervaringsjaren: 2, regio: "Noord-Holland", brutoSalaris: 40000, bedrijfsGrootte: "51-200", opleidingsniveau: "wo", extraVoordelen: "pensioen" },
+  { functie: "Leraar Voortgezet Onderwijs", sector: "Onderwijs", ervaringsjaren: 4, regio: "Zuid-Holland", brutoSalaris: 45000, bedrijfsGrootte: "51-200", opleidingsniveau: "wo", extraVoordelen: "pensioen" },
   { functie: "Leraar Voortgezet Onderwijs", sector: "Onderwijs", ervaringsjaren: 8, regio: "Zuid-Holland", brutoSalaris: 55000, bedrijfsGrootte: "51-200", opleidingsniveau: "wo", extraVoordelen: "pensioen" },
+  { functie: "Docent MBO", sector: "Onderwijs", ervaringsjaren: 1, regio: "Noord-Brabant", brutoSalaris: 38000, bedrijfsGrootte: "200+", opleidingsniveau: "hbo", extraVoordelen: "pensioen" },
+  { functie: "Docent MBO", sector: "Onderwijs", ervaringsjaren: 3, regio: "Zuid-Holland", brutoSalaris: 43000, bedrijfsGrootte: "200+", opleidingsniveau: "hbo", extraVoordelen: "pensioen" },
+  { functie: "Docent MBO", sector: "Onderwijs", ervaringsjaren: 5, regio: "Gelderland", brutoSalaris: 47000, bedrijfsGrootte: "200+", opleidingsniveau: "hbo", extraVoordelen: "pensioen" },
+  { functie: "Docent HBO", sector: "Onderwijs", ervaringsjaren: 2, regio: "Noord-Holland", brutoSalaris: 46000, bedrijfsGrootte: "200+", opleidingsniveau: "wo", extraVoordelen: "pensioen" },
+  { functie: "Docent HBO", sector: "Onderwijs", ervaringsjaren: 5, regio: "Utrecht", brutoSalaris: 54000, bedrijfsGrootte: "200+", opleidingsniveau: "wo", extraVoordelen: "pensioen" },
+  { functie: "Docent HBO", sector: "Onderwijs", ervaringsjaren: 9, regio: "Zuid-Holland", brutoSalaris: 62000, bedrijfsGrootte: "200+", opleidingsniveau: "wo", extraVoordelen: "pensioen" },
+  { functie: "Universitair Docent", sector: "Onderwijs", ervaringsjaren: 3, regio: "Noord-Holland", brutoSalaris: 54000, bedrijfsGrootte: "200+", opleidingsniveau: "wo", extraVoordelen: "pensioen" },
   { functie: "Universitair Docent", sector: "Onderwijs", ervaringsjaren: 10, regio: "Noord-Holland", brutoSalaris: 72000, bedrijfsGrootte: "200+", opleidingsniveau: "wo", extraVoordelen: "pensioen" },
+  { functie: "Schooldirecteur", sector: "Onderwijs", ervaringsjaren: 12, regio: "Zuid-Holland", brutoSalaris: 85000, bedrijfsGrootte: "51-200", opleidingsniveau: "wo", extraVoordelen: "pensioen,auto" },
+  { functie: "Intern Begeleider", sector: "Onderwijs", ervaringsjaren: 5, regio: "Noord-Brabant", brutoSalaris: 48000, bedrijfsGrootte: "11-50", opleidingsniveau: "hbo", extraVoordelen: "pensioen" },
+  { functie: "Onderwijsassistent", sector: "Onderwijs", ervaringsjaren: 2, regio: "Utrecht", brutoSalaris: 28000, bedrijfsGrootte: "11-50", opleidingsniveau: "mbo", extraVoordelen: "pensioen" },
 
   // Juridisch
   { functie: "Advocaat", sector: "Juridisch", ervaringsjaren: 5, regio: "Noord-Holland", brutoSalaris: 85000, bedrijfsGrootte: "11-50", opleidingsniveau: "wo", extraVoordelen: "pensioen,bonus" },
