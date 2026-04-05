@@ -1,369 +1,453 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect, useRef } from "react";
 
-const pijn = [
-  {
-    probleem: "Kandidaat wijst je offer af",
-    gevolg: "Gemiddeld €8.500 aan fee misgelopen + 3 weken zoekwerk weg",
-    oplossing: "Weet vóór het gesprek wat de markt betaalt. Geen verrassingen meer.",
-  },
-  {
-    probleem: "Klant biedt te weinig",
-    gevolg: "Topkandidaten haken af → jij verliest de deal",
-    oplossing: "Onderbouw je advies met harde data. Word de recruiter die klanten vertrouwen.",
-  },
-  {
-    probleem: "Kandidaat onderhandelt onrealistisch",
-    gevolg: "Tijdverspilling + slechte klantrelatie",
-    oplossing: "Stuur marktcijfers mee. Verwachtingen gemanaged vóór de eerste call.",
-  },
-];
+// ── Stripe checkout ──────────────────────────────────────────────────────────
+async function startCheckout(plan: "starter" | "pro" | "recruiter"): Promise<string | null> {
+  const res = await fetch("/api/stripe/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ plan }),
+  });
+  const data = await res.json();
+  if (data.url) { window.location.href = data.url; return null; }
+  return data.error ?? "Er ging iets mis.";
+}
 
-const resultaten = [
-  { getal: "34%", label: "snellere plaatsing", sub: "bij recruiters die marktdata gebruiken" },
-  { getal: "61%", label: "minder no-shows op offers", sub: "door betere salary alignment" },
-  { getal: "€8.500", label: "gem. fee gered per placement", sub: "door vroegtijdig verwachtingen managen" },
-  { getal: "4,8/5", label: "klanttevredenheid", sub: "bij data-gedreven recruiters" },
-];
+function CheckoutBtn({ plan, children, featured }: { plan: "starter" | "pro" | "recruiter"; children: React.ReactNode; featured?: boolean }) {
+  const [loading, setLoading] = useState(false);
+  return (
+    <button
+      disabled={loading}
+      onClick={async () => { setLoading(true); await startCheckout(plan); setLoading(false); }}
+      style={featured
+        ? { background: "#FF4D1C", color: "#fff", border: "none" }
+        : { background: "transparent", color: "#FF4D1C", border: "1.5px solid #FF4D1C" }}
+      className="w-full rounded-xl py-3 px-6 font-bold text-sm transition-all hover:opacity-80 disabled:opacity-50 cursor-pointer"
+    >
+      {loading ? "Laden..." : children}
+    </button>
+  );
+}
 
-const plannen = [
-  {
-    naam: "Starter",
-    prijs: "€49",
-    periode: "/maand",
-    voor: "Kleine bureaus & ZZP-recruiters",
-    features: [
-      "Salarisbenchmarks per sector",
-      "Regio-inzicht (12 provincies)",
-      "Onbeperkt zoeken",
-      "1 gebruiker",
-    ],
-    cta: "Start met Starter",
-    plan: "starter" as const,
-    highlight: false,
-  },
-  {
-    naam: "Pro",
-    prijs: "€99",
-    periode: "/maand",
-    voor: "Groeiende bureaus & in-house teams",
-    label: "Meest gekozen",
-    features: [
-      "Alles van Starter",
-      "Salaristrends (6 maanden historie)",
-      "Acceptatiekans per salarisaanbod",
-      "Marktanalyse per functiegroep",
-      "3 gebruikers",
-      "Priority support",
-    ],
-    cta: "Start met Pro",
-    plan: "pro" as const,
-    highlight: true,
-  },
-  {
-    naam: "Enterprise",
-    prijs: "€199",
-    periode: "/maand",
-    voor: "Grote bureaus & corporate HR",
-    features: [
-      "Alles van Pro",
-      "Volledige ongefilterde database",
-      "Hiring advies per vacature",
-      "Excel/CSV export",
-      "REST API toegang",
-      "Tot 10 gebruikers",
-      "Dedicated account manager",
-      "Maandelijks sectorrapport",
-    ],
-    cta: "Start met Enterprise",
-    plan: "recruiter" as const,
-    highlight: false,
-  },
-];
+// ── Fade-in on scroll ────────────────────────────────────────────────────────
+function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        el.style.opacity = "1";
+        el.style.transform = "translateY(0)";
+        obs.disconnect();
+      }
+    }, { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: 0,
+        transform: "translateY(28px)",
+        transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
-const testimonials = [
-  {
-    quote: "ROI was binnen een week terugverdiend. Minder no-shows op offers dankzij betere salary alignment. Ik laat dit nooit meer los.",
-    naam: "Bas K.",
-    titel: "Recruitment Manager, Rotterdam",
-    roi: "ROI in 1 week",
-  },
-  {
-    quote: "SalarisRadar.nl heeft ons gesprek met klanten getransformeerd. We komen nu met data, niet met giswerk. Klanten vertrouwen ons advies direct.",
-    naam: "Joris M.",
-    titel: "Senior Recruiter, Amsterdam",
-    roi: "Hogere klanttevredenheid",
-  },
-  {
-    quote: "De acceptatiekansberekening alleen al is goud waard. Ik weet nu of een offer realistisch is vóór ik het presenteer aan de kandidaat.",
-    naam: "Petra van D.",
-    titel: "Head of Talent Acquisition",
-    roi: "61% minder no-shows",
-  },
-];
+const BG = "#0D1117";
+const CARD = "#161B22";
+const BORDER = "#21262D";
+const ORANGE = "#FF4D1C";
+const MUTED = "#8B949E";
 
 export default function VoorRecruitersPage() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Nav */}
-      <header className="border-b border-gray-100 bg-white sticky top-0 z-50">
+    <div style={{ background: BG, color: "#E6EDF3", fontFamily: "'DM Sans', sans-serif", minHeight: "100vh" }}>
+      {/* Google Fonts */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap');
+        html { scroll-behavior: smooth; }
+        .syne { font-family: 'Syne', sans-serif; }
+        .dm { font-family: 'DM Sans', sans-serif; }
+        .card-hover { transition: border-color 0.2s, transform 0.2s; }
+        .card-hover:hover { border-color: ${ORANGE} !important; transform: translateY(-2px); }
+        .btn-glow:hover { box-shadow: 0 0 24px rgba(255,77,28,0.4); }
+      `}</style>
+
+      {/* ── STICKY NAV ──────────────────────────────────────────────────────── */}
+      <header style={{ background: `${BG}E6`, borderBottom: `1px solid ${BORDER}`, backdropFilter: "blur(12px)" }}
+        className="sticky top-0 z-50">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <Link href="/" className="flex items-center gap-2">
-            <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">SR</span>
-            <span className="text-lg font-bold text-gray-900">SalarisRadar<span className="text-indigo-600">.nl</span></span>
+            <span style={{ background: ORANGE }} className="rounded-lg px-2 py-1 text-sm font-black text-white">SR</span>
+            <span className="syne text-lg font-bold" style={{ color: "#E6EDF3" }}>SalarisRadar<span style={{ color: ORANGE }}>.nl</span></span>
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
-            <Link href="/checken" className="text-sm text-gray-600 hover:text-indigo-600">Salarischeck</Link>
-            <Link href="/prijzen" className="text-sm text-gray-600 hover:text-indigo-600">Prijzen</Link>
+            {["#probleem", "#features", "#prijzen"].map((h, i) => (
+              <a key={h} href={h} style={{ color: MUTED, fontSize: 14 }}
+                className="hover:text-white transition-colors">
+                {["Probleem", "Features", "Prijzen"][i]}
+              </a>
+            ))}
           </nav>
-          <a href="#plannen" className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors">
-            Start vandaag →
+          <a href="#prijzen"
+            style={{ background: ORANGE, color: "#fff" }}
+            className="btn-glow rounded-xl px-5 py-2.5 text-sm font-bold transition-all hover:opacity-90">
+            Start gratis →
           </a>
         </div>
       </header>
 
       <main>
-        {/* Hero — ROI first */}
-        <section className="bg-gradient-to-br from-indigo-900 to-indigo-700 py-24 text-white">
-          <div className="mx-auto max-w-4xl px-4 text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-orange-500/20 px-4 py-2 text-sm font-semibold text-orange-300">
-              Voor recruitment professionals
-            </div>
-            <h1 className="mb-6 text-5xl font-black leading-tight lg:text-6xl">
-              Stop met offers plaatsen<br />
-              die <span className="text-orange-400">geweigerd worden</span>.
-            </h1>
-            <p className="mx-auto mb-4 max-w-2xl text-xl text-indigo-200">
-              Elke no-show op een offer kost je gemiddeld <strong className="text-white">€8.500</strong> aan fee plus 3 weken zoekwerk.
-              Met SalarisRadar weet je vóór je biedt wat de markt betaalt.
-            </p>
-            <p className="mx-auto mb-10 max-w-xl text-indigo-300">
-              12.847 geverifieerde salarissen · 47 sectoren · 12 regio&apos;s · bijgewerkt deze week
-            </p>
-            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <a
-                href="#plannen"
-                className="rounded-xl bg-orange-500 px-8 py-4 text-lg font-bold text-white hover:bg-orange-400 transition-colors shadow-lg shadow-orange-500/30"
-              >
-                Bekijk plannen → vanaf €49/mnd
+        {/* ── HERO ────────────────────────────────────────────────────────────── */}
+        <section className="relative overflow-hidden py-28 text-center">
+          {/* glow blobs */}
+          <div style={{ position: "absolute", top: -120, left: "50%", transform: "translateX(-50%)", width: 700, height: 400, background: `radial-gradient(ellipse, ${ORANGE}22 0%, transparent 70%)`, pointerEvents: "none" }} />
+
+          <div className="relative mx-auto max-w-4xl px-4">
+            <FadeIn>
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+                style={{ background: `${ORANGE}18`, border: `1px solid ${ORANGE}44`, color: ORANGE }}>
+                <span className="h-2 w-2 rounded-full animate-pulse" style={{ background: ORANGE }} />
+                Real-time salarisdata voor recruiters
+              </div>
+            </FadeIn>
+
+            <FadeIn delay={100}>
+              <h1 className="syne mb-6 font-black leading-none" style={{ fontSize: "clamp(2.4rem, 6vw, 4.2rem)", color: "#E6EDF3" }}>
+                Verhoog je plaatsingen<br />
+                met <span style={{ color: ORANGE }}>15–25%</span> door het<br />
+                juiste salaris te bieden
+              </h1>
+            </FadeIn>
+
+            <FadeIn delay={200}>
+              <p className="mx-auto mb-10 max-w-2xl text-lg" style={{ color: MUTED, lineHeight: 1.7 }}>
+                Voorkom dat kandidaten afhaken door verkeerde salarisinschattingen.
+                SalarisRadar geeft je real-time inzicht in wat kandidaten écht verwachten.
+              </p>
+            </FadeIn>
+
+            <FadeIn delay={300}>
+              <a href="#prijzen"
+                style={{ background: ORANGE, color: "#fff", display: "inline-block" }}
+                className="btn-glow rounded-xl px-8 py-4 text-lg font-bold transition-all hover:opacity-90">
+                Start met betere salarissen →
               </a>
-              <a
-                href="#contact"
-                className="rounded-xl bg-white/10 px-8 py-4 text-lg font-semibold text-white hover:bg-white/20 transition-colors"
-              >
-                Demo aanvragen
-              </a>
-            </div>
+            </FadeIn>
           </div>
         </section>
 
-        {/* ROI stats */}
-        <section className="border-b border-gray-100 bg-indigo-50 py-10">
+        {/* ── STATS ROW ───────────────────────────────────────────────────────── */}
+        <section className="py-12">
           <div className="mx-auto max-w-5xl px-4">
-            <div className="grid grid-cols-2 gap-6 text-center md:grid-cols-4">
-              {resultaten.map((r) => (
-                <div key={r.label}>
-                  <p className="text-3xl font-black text-indigo-700">{r.getal}</p>
-                  <p className="mt-1 text-sm font-bold text-gray-800">{r.label}</p>
-                  <p className="text-xs text-gray-500">{r.sub}</p>
-                </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              {[
+                { getal: "15–25%", label: "Meer plaatsingen", sub: "bij recruiters die marktdata gebruiken" },
+                { getal: "€3k–€10k", label: "Kosten per gemiste hire", sub: "verloren fee + zoektijd" },
+                { getal: "12.847+", label: "Profielen in de database", sub: "bijgewerkt april 2026" },
+              ].map((s, i) => (
+                <FadeIn key={s.label} delay={i * 100}>
+                  <div className="card-hover rounded-2xl p-6 text-center"
+                    style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+                    <p className="syne mb-1 font-black" style={{ fontSize: "2.2rem", color: ORANGE }}>{s.getal}</p>
+                    <p className="font-bold text-white">{s.label}</p>
+                    <p className="mt-1 text-sm" style={{ color: MUTED }}>{s.sub}</p>
+                  </div>
+                </FadeIn>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Pijn → oplossing */}
-        <section className="py-20">
+        {/* ── PROBLEEM ────────────────────────────────────────────────────────── */}
+        <section id="probleem" className="py-20">
           <div className="mx-auto max-w-5xl px-4">
-            <div className="mb-12 text-center">
-              <h2 className="mb-3 text-4xl font-black text-gray-900">Herken je dit?</h2>
-              <p className="text-lg text-gray-500">De duurste fouten in recruitment komen door gebrek aan salarisdata</p>
+            <FadeIn>
+              <div className="mb-12 text-center">
+                <h2 className="syne mb-4 font-black" style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#E6EDF3" }}>
+                  Je verliest kandidaten<br />zonder dat je het doorhebt
+                </h2>
+                <p style={{ color: MUTED }}>Salarisinschattingen die niet kloppen kosten je meer dan je denkt</p>
+              </div>
+            </FadeIn>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              {[
+                { icon: "👻", titel: "Kandidaten haken af", tekst: "Ze ontvangen je offer en reageren niet meer. Geen uitleg, gewoon weg. Te laag salaris was de reden — maar je weet het nooit." },
+                { icon: "📭", titel: "Aanbod gedaan, geen reactie", tekst: "Je hebt weken geïnvesteerd. De kandidaat was enthousiast. Dan het aanbod — stilte. Concurrent bood €5k meer." },
+                { icon: "💸", titel: "Te veel betalen, marge weg", tekst: "Uit angst voor afwijzing bied je te hoog. De fee is veilig maar je klant is ontevreden. Zonder data gok je altijd." },
+              ].map((p, i) => (
+                <FadeIn key={p.titel} delay={i * 120}>
+                  <div className="card-hover rounded-2xl p-6 h-full"
+                    style={{ background: CARD, border: `1px solid #F8514922` }}>
+                    <div className="mb-4 text-3xl">{p.icon}</div>
+                    <h3 className="syne mb-2 font-bold text-white" style={{ fontSize: "1.1rem" }}>{p.titel}</h3>
+                    <p className="text-sm leading-relaxed" style={{ color: MUTED }}>{p.tekst}</p>
+                  </div>
+                </FadeIn>
+              ))}
             </div>
-            <div className="space-y-4">
-              {pijn.map((p) => (
-                <div key={p.probleem} className="grid gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 md:grid-cols-3">
-                  <div className="flex items-start gap-3">
-                    <span className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-bold text-red-600">✕</span>
+
+            {/* Alert bar */}
+            <FadeIn delay={400}>
+              <div className="mt-8 rounded-2xl px-6 py-4 text-center font-semibold"
+                style={{ background: `${ORANGE}15`, border: `1px solid ${ORANGE}44`, color: ORANGE }}>
+                ⚠️ Één gemiste hire kost je gemiddeld <strong>€3.000 – €10.000</strong> aan verloren fee en zoektijd
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* ── OPLOSSING ───────────────────────────────────────────────────────── */}
+        <section className="py-20" style={{ background: CARD }}>
+          <div className="mx-auto max-w-4xl px-4 text-center">
+            <FadeIn>
+              <h2 className="syne mb-4 font-black" style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#E6EDF3" }}>
+                Stop met gokken.<br /><span style={{ color: ORANGE }}>Werk met data.</span>
+              </h2>
+              <p className="mb-12 text-lg" style={{ color: MUTED }}>
+                SalarisRadar toont je precies wat je nodig hebt om het juiste aanbod te doen
+              </p>
+            </FadeIn>
+            <div className="grid gap-6 md:grid-cols-3">
+              {[
+                { n: "01", titel: "Wat kandidaten verdienen", tekst: "Exacte salarissen per functie, sector, regio en ervaringsniveau — van echte Nederlandse professionals." },
+                { n: "02", titel: "Wat de markt verwacht", tekst: "Zie of salarissen stijgen of dalen in jouw sector. Pas je advies aan voordat kandidaten afhaken." },
+                { n: "03", titel: "Welk salaris zorgt voor acceptatie", tekst: "Onze acceptatiekans-indicator vertelt je of je bod realistisch is vóór je het presenteert." },
+              ].map((s, i) => (
+                <FadeIn key={s.n} delay={i * 100}>
+                  <div className="rounded-2xl p-6 text-left"
+                    style={{ background: BG, border: `1px solid ${BORDER}` }}>
+                    <p className="syne mb-3 font-black" style={{ fontSize: "2rem", color: `${ORANGE}55` }}>{s.n}</p>
+                    <h3 className="syne mb-2 font-bold text-white">{s.titel}</h3>
+                    <p className="text-sm leading-relaxed" style={{ color: MUTED }}>{s.tekst}</p>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── FEATURES ────────────────────────────────────────────────────────── */}
+        <section id="features" className="py-20">
+          <div className="mx-auto max-w-5xl px-4">
+            <FadeIn>
+              <div className="mb-12 text-center">
+                <h2 className="syne mb-4 font-black" style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#E6EDF3" }}>
+                  Alles wat je nodig hebt
+                </h2>
+                <p style={{ color: MUTED }}>Gebouwd voor recruitment professionals die sneller willen plaatsen</p>
+              </div>
+            </FadeIn>
+            <div className="grid gap-4 md:grid-cols-2">
+              {[
+                { icon: "🎯", titel: "Salaris per functie, regio & ervaring", tekst: "Filter op exacte combinatie. Geen nationale gemiddelden die nergens op slaan — Nederlandse marktdata, verdeeld per provincie en ervaringsniveau." },
+                { icon: "📈", titel: "Markttrend: stijgend of dalend", tekst: "Zie in één oogopslag of salarissen in jouw sector omhoog of omlaag bewegen. Altijd een stap voor op je concurrenten." },
+                { icon: "⚖️", titel: "Onder/over markt indicator", tekst: "Direct zien of een vacature-salaris competitief is. Adviseer je klant nog vóór je begint met zoeken." },
+                { icon: "✅", titel: "Acceptatiekans op basis van salaris", tekst: "Exclusieve berekening: hoe groot is de kans dat een kandidaat dit aanbod accepteert? Stuur bij voordat het te laat is." },
+              ].map((f, i) => (
+                <FadeIn key={f.titel} delay={i * 80}>
+                  <div className="card-hover flex gap-4 rounded-2xl p-6 h-full"
+                    style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+                    <div className="text-3xl flex-shrink-0">{f.icon}</div>
                     <div>
-                      <p className="font-bold text-gray-900">{p.probleem}</p>
-                      <p className="mt-1 text-sm text-red-600">{p.gevolg}</p>
+                      <h3 className="syne mb-2 font-bold text-white">{f.titel}</h3>
+                      <p className="text-sm leading-relaxed" style={{ color: MUTED }}>{f.tekst}</p>
                     </div>
                   </div>
-                  <div className="flex items-center justify-center md:col-span-1">
-                    <span className="text-3xl text-gray-300">→</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <span className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-600">✓</span>
-                    <p className="text-sm text-gray-700 font-medium">{p.oplossing}</p>
-                  </div>
-                </div>
+                </FadeIn>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Hoe het werkt — outcomes */}
-        <section className="bg-gray-50 py-20">
-          <div className="mx-auto max-w-5xl px-4">
-            <div className="mb-12 text-center">
-              <h2 className="mb-3 text-4xl font-black text-gray-900">Wat je er concreet mee doet</h2>
+        {/* ── UNIEKE WAARDE ───────────────────────────────────────────────────── */}
+        <section className="py-20" style={{ background: CARD }}>
+          <div className="mx-auto max-w-3xl px-4 text-center">
+            <FadeIn>
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+                style={{ background: `${ORANGE}18`, border: `1px solid ${ORANGE}44`, color: ORANGE }}>
+                🔒 Anonieme echte data
+              </div>
+              <h2 className="syne mb-6 font-black" style={{ fontSize: "clamp(1.8rem, 4vw, 2.6rem)", color: "#E6EDF3" }}>
+                Gebaseerd op echte gebruikersdata
+              </h2>
+              <p className="mb-6 text-lg leading-relaxed" style={{ color: MUTED }}>
+                Onze database is opgebouwd uit anonieme bijdragen van Nederlandse professionals.
+                Geen internationale benchmarks die niet kloppen voor de Nederlandse markt.
+                Geen verouderde cao-tabellen. Echte salarissen, van echte mensen, in jouw sector.
+              </p>
+              <div className="rounded-2xl px-6 py-4 inline-block"
+                style={{ background: `${ORANGE}10`, border: `1px solid ${ORANGE}33` }}>
+                <p className="font-semibold" style={{ color: ORANGE }}>
+                  Gebaseerd op <strong>12.847+</strong> profielen — data bijgewerkt april 2026
+                </p>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* ── RESULTAAT ───────────────────────────────────────────────────────── */}
+        <section className="py-20">
+          <div className="mx-auto max-w-4xl px-4">
+            <FadeIn>
+              <h2 className="syne mb-12 text-center font-black" style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#E6EDF3" }}>
+                Wat je ermee bereikt
+              </h2>
+            </FadeIn>
+            <div className="grid gap-4 md:grid-cols-2">
+              {[
+                "Meer kandidaten accepteren je aanbod — minder no-shows op offers",
+                "Snellere plaatsingen door minder onderhandelrondes",
+                "Betere onderhandelpositie bij je klanten met harde data",
+                "Minder gemiste hires door realistische salarisverwachtingen",
+              ].map((r, i) => (
+                <FadeIn key={r} delay={i * 80}>
+                  <div className="card-hover flex items-start gap-3 rounded-2xl p-5"
+                    style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                      style={{ background: `${ORANGE}20`, color: ORANGE }}>✓</span>
+                    <p className="text-sm leading-relaxed" style={{ color: "#C9D1D9" }}>{r}</p>
+                  </div>
+                </FadeIn>
+              ))}
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
+          </div>
+        </section>
+
+        {/* ── PRICING ─────────────────────────────────────────────────────────── */}
+        <section id="prijzen" className="py-20" style={{ background: CARD }}>
+          <div className="mx-auto max-w-5xl px-4">
+            <FadeIn>
+              <div className="mb-12 text-center">
+                <h2 className="syne mb-4 font-black" style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#E6EDF3" }}>
+                  Kies jouw plan
+                </h2>
+                <p style={{ color: MUTED }}>Geen jaarcontract · Opzegbaar per maand · Direct toegang</p>
+              </div>
+            </FadeIn>
+            <div className="grid gap-6 md:grid-cols-3 items-start">
               {[
                 {
-                  icon: "🎯",
-                  titel: "Salary alignment vóór het first interview",
-                  tekst: "Stuur de kandidaat vóór het gesprek een marktoverzicht. Geen onrealistische verwachtingen, geen teleurstelling achteraf. Jij bent de recruiter die het snapt.",
+                  naam: "Starter", prijs: "€49", plan: "starter" as const, featured: false,
+                  voor: "Kleine bureaus & ZZP-recruiters",
+                  features: ["Salarisbenchmarks per sector", "Regio-inzicht (12 provincies)", "Onbeperkt zoeken", "Salarisalert", "1 gebruiker"],
                 },
                 {
-                  icon: "📊",
-                  titel: "Klanten overtuigen met data, niet gevoel",
-                  tekst: "\"De markt betaalt €72k – €85k voor deze rol in Amsterdam.\" Met dat zinnetje plus een SalarisRadar-rapport win je elke discussie over budget met je klant.",
+                  naam: "Pro", prijs: "€99", plan: "pro" as const, featured: true,
+                  voor: "Groeiende bureaus & in-house HR",
+                  features: ["Alles van Starter", "Salaristrends (6 mnd)", "Acceptatiekans per aanbod", "Marktanalyse per functiegroep", "3 gebruikers", "Priority support"],
                 },
                 {
-                  icon: "⚡",
-                  titel: "Snellere plaatsing, minder onderhandelrondes",
-                  tekst: "Data-gedreven recruiters hebben gemiddeld 34% kortere time-to-fill. Minder heen en weer, meer plaatsingen per kwartaal.",
+                  naam: "Enterprise", prijs: "€199", plan: "recruiter" as const, featured: false,
+                  voor: "Grote bureaus & corporate HR",
+                  features: ["Alles van Pro", "Volledige database", "Hiring advies per vacature", "CSV & Excel export", "API toegang", "10 gebruikers", "Account manager"],
                 },
-                {
-                  icon: "🏆",
-                  titel: "Word de recruiter die klanten aanbevelen",
-                  tekst: "Klanten onthouden de recruiter die hen voor nare verrassingen behoedde. Lever een salarisrapport mee bij elke plaatsing — onderscheidend, professioneel, gratis voor jou.",
-                },
-              ].map((card) => (
-                <div key={card.titel} className="flex gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
-                  <div className="text-3xl flex-shrink-0">{card.icon}</div>
-                  <div>
-                    <h3 className="mb-2 font-bold text-gray-900">{card.titel}</h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">{card.tekst}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Pricing — 3 tiers */}
-        <section id="plannen" className="py-20 bg-white">
-          <div className="mx-auto max-w-5xl px-4">
-            <div className="mb-12 text-center">
-              <h2 className="mb-3 text-4xl font-black text-gray-900">Kies jouw plan</h2>
-              <p className="text-gray-500">Geen jaarcontract · Opzegbaar per maand · Direct toegang</p>
-            </div>
-            <div className="grid gap-6 md:grid-cols-3">
-              {plannen.map((plan) => (
-                <div
-                  key={plan.naam}
-                  className={`relative rounded-2xl p-8 ${
-                    plan.highlight
-                      ? "bg-indigo-600 text-white shadow-2xl shadow-indigo-200 ring-2 ring-indigo-400 scale-105"
-                      : "bg-white shadow-sm ring-1 ring-gray-100"
-                  }`}
-                >
-                  {plan.label && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-orange-500 px-4 py-1 text-xs font-bold text-white">
-                      {plan.label}
+              ].map((plan, i) => (
+                <FadeIn key={plan.naam} delay={i * 100}>
+                  <div className="relative rounded-2xl p-8"
+                    style={{
+                      background: plan.featured ? `linear-gradient(135deg, #161B22, #1C2128)` : BG,
+                      border: plan.featured ? `2px solid ${ORANGE}` : `1px solid ${BORDER}`,
+                      marginTop: plan.featured ? -8 : 0,
+                    }}>
+                    {plan.featured && (
+                      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold text-white whitespace-nowrap"
+                        style={{ background: ORANGE }}>
+                        ⭐ Meest gekozen
+                      </div>
+                    )}
+                    <p className="syne mb-1 text-xs font-bold uppercase tracking-widest" style={{ color: plan.featured ? ORANGE : MUTED }}>
+                      {plan.naam}
+                    </p>
+                    <div className="mb-1 flex items-end gap-1">
+                      <span className="syne font-black text-white" style={{ fontSize: "3rem" }}>{plan.prijs}</span>
+                      <span className="mb-2 text-sm" style={{ color: MUTED }}>/maand</span>
                     </div>
-                  )}
-                  <p className={`mb-1 text-sm font-semibold ${plan.highlight ? "text-indigo-200" : "text-indigo-600"}`}>
-                    {plan.naam}
-                  </p>
-                  <div className="mb-1 flex items-end gap-1">
-                    <span className="text-4xl font-black">{plan.prijs}</span>
-                    <span className={`mb-1 text-sm ${plan.highlight ? "text-indigo-200" : "text-gray-400"}`}>{plan.periode}</span>
+                    <p className="mb-6 text-xs" style={{ color: MUTED }}>{plan.voor}</p>
+                    <ul className="mb-8 space-y-2">
+                      {plan.features.map((f) => (
+                        <li key={f} className="flex items-start gap-2 text-sm" style={{ color: "#C9D1D9" }}>
+                          <span style={{ color: ORANGE }} className="mt-0.5 flex-shrink-0">✓</span>
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <CheckoutBtn plan={plan.plan} featured={plan.featured}>
+                      Start met {plan.naam} →
+                    </CheckoutBtn>
                   </div>
-                  <p className={`mb-6 text-xs ${plan.highlight ? "text-indigo-200" : "text-gray-500"}`}>{plan.voor}</p>
-                  <ul className="mb-8 space-y-2">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm">
-                        <span className={plan.highlight ? "text-indigo-200" : "text-green-500"}>✓</span>
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href="/registreer"
-                    className={`block w-full rounded-xl py-3 text-center text-sm font-bold transition-colors ${
-                      plan.highlight
-                        ? "bg-white text-indigo-600 hover:bg-indigo-50"
-                        : "bg-indigo-600 text-white hover:bg-indigo-700"
-                    }`}
-                  >
-                    {plan.cta}
-                  </Link>
-                </div>
-              ))}
-            </div>
-            <p className="mt-8 text-center text-sm text-gray-400">
-              Grotere teams of enterprise deal?{" "}
-              <a href="#contact" className="text-indigo-600 underline hover:text-indigo-800">Neem contact op</a>
-            </p>
-          </div>
-        </section>
-
-        {/* Testimonials */}
-        <section className="bg-gray-50 py-20">
-          <div className="mx-auto max-w-5xl px-4">
-            <h2 className="mb-10 text-center text-4xl font-black text-gray-900">Wat recruiters zeggen</h2>
-            <div className="grid gap-6 md:grid-cols-3">
-              {testimonials.map((t) => (
-                <div key={t.naam} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 flex flex-col">
-                  <div className="mb-3 flex items-center justify-between">
-                    <span className="text-orange-400">★★★★★</span>
-                    <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">{t.roi}</span>
-                  </div>
-                  <p className="mb-4 flex-1 italic text-gray-700 text-sm">&quot;{t.quote}&quot;</p>
-                  <div>
-                    <p className="font-semibold text-gray-900">{t.naam}</p>
-                    <p className="text-xs text-gray-400">{t.titel}</p>
-                  </div>
-                </div>
+                </FadeIn>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Demo contact */}
-        <section id="contact" className="py-20">
-          <div className="mx-auto max-w-xl px-4">
-            <div className="mb-10 text-center">
-              <h2 className="mb-3 text-4xl font-black text-gray-900">Liever een demo?</h2>
-              <p className="text-gray-500">We laten je in 20 minuten zien hoe het direct jouw plaatsingsratio verbetert</p>
-            </div>
-            <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="mb-1 block text-sm font-semibold text-gray-700">Voornaam</label>
-                    <input type="text" placeholder="Jan" className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-semibold text-gray-700">Achternaam</label>
-                    <input type="text" placeholder="Jansen" className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
-                  </div>
-                </div>
+        {/* ── SOCIAL PROOF ────────────────────────────────────────────────────── */}
+        <section className="py-20">
+          <div className="mx-auto max-w-3xl px-4">
+            <FadeIn>
+              <div className="rounded-2xl p-8 text-center"
+                style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+                <div className="mb-6 text-4xl">&ldquo;</div>
+                <p className="mb-6 text-xl leading-relaxed" style={{ color: "#C9D1D9" }}>
+                  Sinds we SalarisRadar gebruiken, accepteren kandidaten sneller ons aanbod.
+                  We verspillen geen tijd meer aan aanbiedingen die toch worden afgewezen.
+                  Gewoon data gebruiken en plaatsen.
+                </p>
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-gray-700">Zakelijk e-mailadres</label>
-                  <input type="email" placeholder="jan@bureau.nl" className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
+                  <p className="font-bold text-white">Marleen V.</p>
+                  <p className="text-sm" style={{ color: MUTED }}>Senior Recruiter · Amsterdam</p>
                 </div>
-                <div>
-                  <label className="mb-1 block text-sm font-semibold text-gray-700">Bedrijfsnaam</label>
-                  <input type="text" placeholder="Recruitment Bureau BV" className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
-                </div>
-                <button className="w-full rounded-xl bg-indigo-600 py-3 font-bold text-white hover:bg-indigo-700 transition-colors">
-                  Demo aanvragen →
-                </button>
-                <p className="text-center text-xs text-gray-400">Reactie binnen 1 werkdag · Geen verplichtingen</p>
+                <div className="mt-4" style={{ color: ORANGE }}>★★★★★</div>
               </div>
-            </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* ── FINAL CTA ───────────────────────────────────────────────────────── */}
+        <section className="py-24 text-center" style={{ background: CARD }}>
+          <div className="mx-auto max-w-2xl px-4">
+            <FadeIn>
+              <h2 className="syne mb-6 font-black" style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", color: "#E6EDF3" }}>
+                Stop met gokken.<br />
+                <span style={{ color: ORANGE }}>Start met plaatsen.</span>
+              </h2>
+              <p className="mb-8 text-lg" style={{ color: MUTED }}>
+                Elke dag zonder data is een dag dat je kandidaten verliest aan concurrenten die wél weten wat de markt betaalt.
+              </p>
+              <a href="#prijzen"
+                style={{ background: ORANGE, color: "#fff", display: "inline-block" }}
+                className="btn-glow rounded-xl px-10 py-4 text-lg font-bold transition-all hover:opacity-90">
+                Probeer SalarisRadar vandaag →
+              </a>
+              <p className="mt-4 text-sm" style={{ color: MUTED }}>
+                Data bijgewerkt april 2026 · Geen jaarcontract · Direct toegang
+              </p>
+            </FadeIn>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-gray-100 bg-white py-8 text-center text-sm text-gray-400">
-        © {new Date().getFullYear()} SalarisRadar.nl —{" "}
-        <Link href="/" className="hover:text-indigo-600">Home</Link>
-        {" · "}
-        <Link href="/prijzen" className="hover:text-indigo-600">Prijzen</Link>
+      {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
+      <footer style={{ borderTop: `1px solid ${BORDER}` }} className="py-8 text-center text-sm">
+        <p style={{ color: MUTED }}>
+          © {new Date().getFullYear()} SalarisRadar.nl ·{" "}
+          <Link href="/" className="hover:text-white transition-colors">Home</Link>
+          {" · "}
+          <Link href="/prijzen" className="hover:text-white transition-colors">Prijzen</Link>
+          {" · "}
+          <Link href="/checken" className="hover:text-white transition-colors">Salaris checken</Link>
+        </p>
       </footer>
     </div>
   );
