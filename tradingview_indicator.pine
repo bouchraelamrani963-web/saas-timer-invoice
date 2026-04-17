@@ -1,0 +1,179 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0
+// © saas-timer-invoice
+
+//@version=5
+indicator(title="Trend & Momentum Dashboard", shorttitle="TMD", overlay=true, max_bars_back=500)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INPUTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+// EMA Settings
+emaFastLen  = input.int(9,   "Fast EMA",   minval=1, group="EMA Settings")
+emaMidLen   = input.int(21,  "Mid EMA",    minval=1, group="EMA Settings")
+emaSlowLen  = input.int(50,  "Slow EMA",   minval=1, group="EMA Settings")
+emaTrendLen = input.int(200, "Trend EMA",  minval=1, group="EMA Settings")
+
+// RSI Settings
+rsiLen      = input.int(14,  "RSI Length",      minval=1,  group="RSI Settings")
+rsiOverbought = input.int(70, "Overbought",      minval=50, group="RSI Settings")
+rsiOversold   = input.int(30, "Oversold",        maxval=50, group="RSI Settings")
+
+// MACD Settings
+macdFast    = input.int(12, "MACD Fast",   minval=1, group="MACD Settings")
+macdSlow    = input.int(26, "MACD Slow",   minval=1, group="MACD Settings")
+macdSignal  = input.int(9,  "MACD Signal", minval=1, group="MACD Settings")
+
+// ATR / Volatility
+atrLen      = input.int(14, "ATR Length",  minval=1, group="ATR / Volatility")
+atrMult     = input.float(1.5, "ATR Multiplier", minval=0.1, step=0.1, group="ATR / Volatility")
+
+// Display
+showEmas        = input.bool(true,  "Show EMAs",          group="Display")
+showSignals     = input.bool(true,  "Show Buy/Sell Signals", group="Display")
+showStopLines   = input.bool(true,  "Show ATR Stop Lines",   group="Display")
+showLabels      = input.bool(true,  "Show Signal Labels",    group="Display")
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CALCULATIONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+// EMAs
+emaFast  = ta.ema(close, emaFastLen)
+emaMid   = ta.ema(close, emaMidLen)
+emaSlow  = ta.ema(close, emaSlowLen)
+emaTrend = ta.ema(close, emaTrendLen)
+
+// RSI
+rsi = ta.rsi(close, rsiLen)
+
+// MACD
+[macdLine, signalLine, histLine] = ta.macd(close, macdFast, macdSlow, macdSignal)
+
+// ATR
+atr = ta.atr(atrLen)
+
+// ATR-based dynamic stop levels
+longStop  = close - atr * atrMult
+shortStop = close + atr * atrMult
+
+// Trend direction (price above/below 200 EMA)
+bullTrend = close > emaTrend
+bearTrend = close < emaTrend
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SIGNAL LOGIC
+// ─────────────────────────────────────────────────────────────────────────────
+
+// EMA crossover conditions
+emaBullCross = ta.crossover(emaFast, emaMid)
+emaBearCross = ta.crossunder(emaFast, emaMid)
+
+// MACD crossover conditions
+macdBullCross = ta.crossover(macdLine, signalLine)
+macdBearCross = ta.crossunder(macdLine, signalLine)
+
+// RSI filters (avoid buying overbought / selling oversold)
+rsiBullFilter = rsi < rsiOverbought
+rsiBearFilter = rsi > rsiOversold
+
+// Combined BUY signal: EMA cross up + MACD bull + above trend EMA + RSI not overbought
+buySignal  = emaBullCross and macdBullCross and bullTrend and rsiBullFilter
+
+// Combined SELL signal: EMA cross down + MACD bear + below trend EMA + RSI not oversold
+sellSignal = emaBearCross and macdBearCross and bearTrend and rsiBearFilter
+
+// Momentum state for background coloring
+strongBull = bullTrend and emaFast > emaMid and emaMid > emaSlow and macdLine > signalLine
+strongBear = bearTrend and emaFast < emaMid and emaMid < emaSlow and macdLine < signalLine
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PLOTTING — EMAs
+// ─────────────────────────────────────────────────────────────────────────────
+
+plot(showEmas ? emaFast  : na, "EMA Fast (9)",   color=color.new(color.yellow, 0),  linewidth=1)
+plot(showEmas ? emaMid   : na, "EMA Mid (21)",   color=color.new(color.orange, 0),  linewidth=1)
+plot(showEmas ? emaSlow  : na, "EMA Slow (50)",  color=color.new(color.red,    20), linewidth=2)
+plot(showEmas ? emaTrend : na, "EMA Trend (200)",color=color.new(color.blue,   10), linewidth=2)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PLOTTING — ATR STOP LINES
+// ─────────────────────────────────────────────────────────────────────────────
+
+plot(showStopLines and bullTrend ? longStop  : na, "Long Stop",  color=color.new(color.green, 40), style=plot.style_stepline, linewidth=1)
+plot(showStopLines and bearTrend ? shortStop : na, "Short Stop", color=color.new(color.red,   40), style=plot.style_stepline, linewidth=1)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PLOTTING — BUY / SELL SIGNALS
+// ─────────────────────────────────────────────────────────────────────────────
+
+plotshape(showSignals and buySignal,  title="Buy Signal",
+     location=location.belowbar, style=shape.triangleup,
+     color=color.new(color.green, 0), size=size.small)
+
+plotshape(showSignals and sellSignal, title="Sell Signal",
+     location=location.abovebar, style=shape.triangledown,
+     color=color.new(color.red, 0),   size=size.small)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LABELS
+// ─────────────────────────────────────────────────────────────────────────────
+
+if showLabels and buySignal
+    label.new(bar_index, low - atr * 0.5,
+         text="BUY\nRSI: " + str.tostring(math.round(rsi, 1)),
+         color=color.new(color.green, 10),
+         textcolor=color.white,
+         style=label.style_label_up,
+         size=size.small)
+
+if showLabels and sellSignal
+    label.new(bar_index, high + atr * 0.5,
+         text="SELL\nRSI: " + str.tostring(math.round(rsi, 1)),
+         color=color.new(color.red, 10),
+         textcolor=color.white,
+         style=label.style_label_down,
+         size=size.small)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BACKGROUND COLOR — momentum state
+// ─────────────────────────────────────────────────────────────────────────────
+
+bgcolor(strongBull ? color.new(color.green, 93) : na, title="Strong Bull Background")
+bgcolor(strongBear ? color.new(color.red,   93) : na, title="Strong Bear Background")
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INFO TABLE (top-right corner)
+// ─────────────────────────────────────────────────────────────────────────────
+
+var table infoTable = table.new(position.top_right, 2, 6,
+     border_width=1,
+     border_color=color.new(color.gray, 60),
+     bgcolor=color.new(color.black, 70))
+
+if barstate.islast
+    rsiColor    = rsi >= rsiOverbought ? color.red : rsi <= rsiOversold ? color.green : color.yellow
+    trendColor  = bullTrend ? color.green : color.red
+    trendText   = bullTrend ? "BULLISH" : "BEARISH"
+    macdColor   = macdLine > signalLine ? color.green : color.red
+    macdText    = macdLine > signalLine ? "BULL" : "BEAR"
+    momentumCol = strongBull ? color.green : strongBear ? color.red : color.yellow
+    momentumTxt = strongBull ? "STRONG BULL" : strongBear ? "STRONG BEAR" : "NEUTRAL"
+
+    table.cell(infoTable, 0, 0, "Indicator",  text_color=color.gray,  text_size=size.small, bgcolor=color.new(color.black, 60))
+    table.cell(infoTable, 1, 0, "Value",      text_color=color.gray,  text_size=size.small, bgcolor=color.new(color.black, 60))
+
+    table.cell(infoTable, 0, 1, "Trend",      text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 1, trendText,    text_color=trendColor,  text_size=size.small)
+
+    table.cell(infoTable, 0, 2, "RSI",        text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 2, str.tostring(math.round(rsi, 2)), text_color=rsiColor, text_size=size.small)
+
+    table.cell(infoTable, 0, 3, "MACD",       text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 3, macdText,     text_color=macdColor,   text_size=size.small)
+
+    table.cell(infoTable, 0, 4, "ATR",        text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 4, str.tostring(math.round(atr, 4)), text_color=color.white, text_size=size.small)
+
+    table.cell(infoTable, 0, 5, "Momentum",   text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 5, momentumTxt,  text_color=momentumCol, text_size=size.small)
