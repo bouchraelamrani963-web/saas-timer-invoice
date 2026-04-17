@@ -14,15 +14,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <span className="rounded-lg bg-indigo-600 px-2 py-1 text-sm font-black text-white">SR</span>
             <span className="text-lg font-bold text-gray-900">SalarisRadar<span className="text-indigo-600">.nl</span></span>
           </Link>
-          <nav className="flex items-center gap-6">
+          <nav className="hidden items-center gap-6 md:flex">
             <Link href="/dashboard" className="text-sm text-gray-600 hover:text-indigo-600">Dashboard</Link>
             <Link href="/dashboard/coach" className="text-sm text-gray-600 hover:text-indigo-600">Onderhandelcoach</Link>
             <Link href="/dashboard/budgetteren" className="text-sm text-gray-600 hover:text-indigo-600">Budgetplanner</Link>
-            <span className="text-sm text-gray-400">{session.email}</span>
-            <form action="/api/auth/logout" method="POST">
-              <button type="submit" className="text-sm text-gray-500 hover:text-red-600">Uitloggen</button>
-            </form>
+            <span className="hidden text-sm text-gray-400 md:inline">{session.email}</span>
           </nav>
+          <form action="/api/auth/logout" method="POST">
+            <button type="submit" className="text-sm text-gray-500 hover:text-red-600">Uitloggen</button>
+          </form>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-10">{children}</main>
